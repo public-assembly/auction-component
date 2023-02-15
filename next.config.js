@@ -2,6 +2,12 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  images: {
+    domains: [
+      "bafybeieqevmswsepaxqgmy4i7ho7yby4xanb3w4lrckjzb7j7yyolmtuxa.ipfs.nftstorage.link",
+      "ipfs.io",
+    ]
+  },
   webpack: (config) => {
     config.module.rules.push({
       test: /\.(md|mdx)?$/,
