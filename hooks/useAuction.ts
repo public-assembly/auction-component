@@ -147,11 +147,11 @@ import {useState, useEffect} from "react"
             functionName: "createAuction",
             args: [
                 "0xa3ba36ce1af5fa6bb8ab35a61c8ae72293b38b32", // collection address
-                "1",  // tokenid
+                "5",  // tokenid
                 3600, // 900 = 15 minutes
                 "10000000000000000", // 0.01 ether reserve price
                 "0x806164c929Ad3A6f4bd70c2370b3Ef36c64dEaa8", // funds recip,
-                1676418306, // 645pm tues feb 14
+                1676537313, // unix time
                 0, // 0 listing fee bps
                 "0x806164c929Ad3A6f4bd70c2370b3Ef36c64dEaa8" // listing fee recip
 

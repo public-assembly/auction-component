@@ -1,7 +1,7 @@
 // @ts-nocheck
 import { shortenAddress } from '../../../utils'
 import {useState} from "react"
-import {usePrepareContractWrite, useContractWrite, useProvider} from 'wagmi'
+import {usePrepareContractWrite, useContractWrite, useWaitForTransaction, useProvider} from 'wagmi'
 import goerliZoraAddresses from "@zoralabs/v3/dist/addresses/5.json";
 import auctionABI from "@zoralabs/v3/dist/artifacts/ReserveAuctionListingEth.sol/ReserveAuctionListingEth.json"
 import {BigNumber, utils, Contract} from "ethers"
@@ -9,6 +9,8 @@ import { BasementProvider } from '@basementdev/ethers-provider';
 
 
 export function AuctionLogicHeader({time, auction, metadata}: any) {
+
+    console.log("auction coming in :", auction)
 
     const [bidValue, setBidValue] = useState<number>('');
 
@@ -39,7 +41,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
         // then bid must be at least 1.10x current highest bid
 
         // PLACE BID FLOW
-        const { config: bidConfig } = usePrepareContractWrite({
+        const { config: bidConfig, error: bidError } = usePrepareContractWrite({
             address: goerliZoraAddresses.ReserveAuctionListingEth,
             abi: auctionABI.abi,
             functionName: "createBid",
@@ -56,13 +58,23 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
 
         const { 
             write: bidWrite, 
+            data: bidData,
             isError: bidIsError, 
             isLoading: bidIsLoading, 
             isSuccess: bidIsSuccess, 
             status: bidSucess 
         } = useContractWrite(bidConfig)   
 
-        // PLACE BID FLOW
+        // Wait for data from bid call
+        const { data: bidWaitData, isLoading: bidWaitLoading } = useWaitForTransaction({
+            hash:  bidData?.hash,
+            onSuccess(bidWaitData) {
+                console.log("txn complete: ", bidWaitData)
+                console.log("txn hash: ", bidWaitData.transactionHash)
+            }
+        })              
+
+        //  SETTLE AUCTINO FLOW
         const validSettleCheck = () => {
             if (!!auction && ((Number(auction.firstBidTime) + Number(auction.duration)) < time)) {
                 return true
@@ -71,9 +83,9 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
             }
         }
 
-        const validSettle: bool = validBidCheck()
+        const validSettle: bool = validSettleCheck()
 
-        const { config: settleConfig } = usePrepareContractWrite({
+        const { config: settleConfig, error: settleError } = usePrepareContractWrite({
             address: goerliZoraAddresses.ReserveAuctionListingEth,
             abi: auctionABI.abi,
             functionName: "settleAuction",
@@ -82,19 +94,26 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                 metadata.tokenId,  // tokenid
 
             ],
-            enabled: validSettle ? true : false,
-            overrides: {
-                value: bidInputConverted,
-            }
+            enabled: validSettle ? true : false
         })
         
         const { 
             write: settleWrite, 
+            data: settleData,
             isError: settleIsError, 
             isLoading: settleIsLoading, 
             isSuccess: settleIsSuccess, 
             status: settleStatus  
-        } = useContractWrite(settleConfig)         
+        } = useContractWrite(settleConfig)        
+        
+        // Wait for data from settle call
+        const { data: settleWaitData, isLoading: settleWaitLoading } = useWaitForTransaction({
+            hash:  settleData?.hash,
+            onSuccess(settleWaitData) {
+                console.log("txn complete: ", settleWaitData)
+                console.log("txn hash: ", settleWaitData.transactionHash)
+            }
+        })                  
 
         const calculateBidFloor = () => {
             return !!auction ? (Number(auction.reservePrice) * 1.1).toFixed(2).toString() : "0"
@@ -105,7 +124,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                 return auction.reservePrice
             } else if (!!auction && Number(auction.highestBid) >= Number(auction.reservePrice)) {
                 // let intermediary = BigNumber.from((Number(auction.highestBid) * 1.1).toString()).toString()
-                let intermediary = ((Number(auction.highestBid) * 1.1).toString())
+                let intermediary = ((Number(auction.highestBid) * 1.1).toFixed(5).toString())
                 // return utils.formatEther(intermediary)             
                 return intermediary
             } else {
@@ -129,7 +148,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
         // state for loading txns
         const svgLoader = () => {
             return (
-                <div className="flex flex-row justify-center w-full h-full">
+                <div className="flex flex-row justify-center items-center w-full h-[30px]">
                     <img
                     className="text-black rounded-full" 
                     width="26px"
@@ -139,13 +158,13 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
             )
         }
 
-        const bidCTA = bidIsLoading
+        const bidCTA = bidIsLoading || bidWaitLoading
             ? svgLoader()
             : bidIsSuccess
             ? "Bid"
             : "Bid"        
 
-        const settleCTA = settleIsLoading
+        const settleCTA = settleIsLoading || settleWaitLoading
             ? svgLoader()
             : settleIsSuccess
             ? "Settled"
@@ -162,7 +181,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
     if (!time || !auction || !metadata) {
         return (
             <div className="flex flex-row flex-wrap w-full">
-                <div className="flex flex-row w-full text-[18px]">
+                <div className="flex flex-row w-full text-[18px] pb-[2px]">
                     collection:
                 </div>
                 <div className="flex flex-row w-full text-[16px]">
@@ -172,8 +191,8 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
         )
     } else if (auction.seller == "0x0000000000000000000000000000000000000000") {
         return (
-            <div className="flex flex-row flex-wrap w-full">
-                <div className="flex flex-row w-full text-[18px]">
+            <div className="flex flex-row flex-wrap w-full py-[12px]">
+                <div className="flex flex-row w-full text-[18px] pb-[2px]">
                     {metadata.metadata.name}
                 </div>
                 <div className="flex flex-row w-full text-[16px]">
@@ -186,8 +205,8 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
         )
     } else if (Number(auction.startTime) > time) {
         return (
-            <div className="flex flex-row flex-wrap w-full pb-[16px] ">
-                <div className="flex flex-row w-full text-[18px]">
+            <div className="flex flex-row flex-wrap w-full pb-[16px] pt-[12px]">
+                <div className="flex flex-row w-full text-[18px] pb-[2px]">
                     {metadata.metadata.name}
                 </div>
                 <div className="flex flex-row w-full text-[16px]">
@@ -203,8 +222,8 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
         )
     } else if (auction.firstBidTime == "0") {
         return (
-            <div className="flex flex-row flex-wrap w-full pb-[16px]">
-                <div className="flex flex-row w-full text-[18px]">
+            <div className="flex flex-row flex-wrap w-full pb-[16px] pt-[12px]">
+                <div className="flex flex-row w-full text-[18px] pb-[2px]">
                     {metadata.metadata.name}
                 </div>
                 <div className="flex flex-row w-full text-[16px]">
@@ -213,11 +232,11 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                     {shortenAddress(metadata.mintInfo.originatorAddress)}
                     </div>
                 </div>                        
-                <div className="mt-[12px] grid-rows-1 grid-cols-[2fr_1fr] space-x-3 h-[40px] w-full text-[16px] ">
+                <div className="mt-[12px] grid-rows-1 grid-cols-[2fr_1fr] flex flex-row items-center h-fit space-x-3 w-full text-[16px] ">
                     <input 
                         type="number"
                         placeholder={`Ξ ${bidFloor} OR MORE`}
-                        className="px-2 h-full cols-start-0 cols-end-1 row-start-0 row-end-1 text-[14px] font-mono bg-[#EAECEB] rounded-[4px]"
+                        className="border-none px-2 h-[40px] h-min-[40px] cols-start-0 cols-end-1 row-start-0 row-end-1 text-[14px] font-mono bg-[#EAECEB] rounded-[4px]"
                         value={bidValue}
                         onChange={(e) => {
                             e.preventDefault();
@@ -229,19 +248,19 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                     >
                     </input>
                     <button 
-                        className="px-2 h-full rounded-[4px] cols-start-1 cols-end-2 row-start-0 row-end-1 w-[88px]  bg-[#1E1F22] text-white"
-                        disabled={!validBid}
-                        onClick={()=>write()}
+                        className="disabled:bg-[#C9D2D2] disabled:bg-opacity-[40%] disabled:border-none disabled:text-[#C9D2D2] focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] hover:cursor-pointer hover:border-[1px] hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-[40px] min-h-[40px] rounded-[4px] cols-start-1 cols-end-2 row-start-0 row-end-1 w-[88px]  bg-[#1E1F22] text-white"
+                        disabled={!validBid || !!bidError ? true : false}
+                        onClick={()=>bidWrite()}
                     >
-                        Bid
+                        {bidCTA}
                     </button>
-                </div>                                                      
+                </div>                                                       
             </div>            
         )
     } else if ((Number(auction.firstBidTime) + Number(auction.duration)) > time) {
         return (
-            <div className="flex flex-row flex-wrap w-full pb-[16px]">
-                <div className="flex flex-row w-full text-[18px]">
+            <div className="flex flex-row flex-wrap w-full pb-[16px] pt-[12px]">
+                <div className="flex flex-row w-full text-[18px] pb-[2px]">
                     {metadata.metadata.name}
                 </div>
                 <div className="flex flex-row w-full text-[16px]">
@@ -250,11 +269,11 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                     {shortenAddress(metadata.mintInfo.originatorAddress)}
                     </div>
                 </div>                        
-                <div className="mt-[12px] grid-rows-1 grid-cols-[2fr_1fr] space-x-3 h-[40px] w-full text-[16px] ">
+                <div className="mt-[12px] grid-rows-1 grid-cols-[2fr_1fr] flex flex-row items-center h-fit space-x-3 w-full text-[16px] ">
                     <input 
                         type="number"
                         placeholder={`Ξ ${bidFloor} OR MORE`}
-                        className="border-none px-2 h-full cols-start-0 cols-end-1 row-start-0 row-end-1 text-[14px] font-mono bg-[#EAECEB] rounded-[4px]"
+                        className="border-none px-2 h-[40px] h-min-[40px] cols-start-0 cols-end-1 row-start-0 row-end-1 text-[14px] font-mono bg-[#EAECEB] rounded-[4px]"
                         value={bidValue}
                         onChange={(e) => {
                             e.preventDefault();
@@ -266,22 +285,16 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                     >
                     </input>
                     <button 
-                        className="disabled:bg-[#C9D2D2] disabled:bg-opacity-[40%] disabled:border-none disabled:text-[#C9D2D2] focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] hover:border-[1px] hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-full rounded-[4px] cols-start-1 cols-end-2 row-start-0 row-end-1 w-[88px]  bg-[#1E1F22] text-white"
-                        disabled={!validBid}
-                        onClick={()=>write()}
+                        className="disabled:bg-[#C9D2D2] disabled:bg-opacity-[40%] disabled:border-none disabled:text-[#C9D2D2] focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] hover:cursor-pointer hover:border-[1px] hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-[40px] min-h-[40px] rounded-[4px] cols-start-1 cols-end-2 row-start-0 row-end-1 w-[88px]  bg-[#1E1F22] text-white"
+                        disabled={!validBid || !!bidError ? true : false}
+                        onClick={()=>bidWrite()}
                     >
-                        Bid
+                        {bidCTA}
                     </button>
                 </div>   
                 <div className="flex flex-row w-full pt-[16px] text-[16px]">
-                    Current Bid&nbsp;&nbsp;<div className="text-[#889292]">Ξ&nbsp;{auction.highestBid}</div>
+                    Current Bid&nbsp;<div className="text-[#889292]">Ξ&nbsp;{auction.highestBid}</div>
                 </div>     
-                {/* <div className="flex flex-row items-center text-[#889292] w-6/12 pt-[16px] text-[16px]">
-                    View bid history&nbsp;
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M13.2356 7.67353C13.3658 7.8037 13.3658 8.01476 13.2356 8.14493L12.7642 8.61633L8.99298 12.3876C8.8628 12.5177 8.65175 12.5177 8.52157 12.3876L8.05017 11.9162C7.91999 11.786 7.91999 11.5749 8.05017 11.4448L10.8717 8.62327L2.99992 8.62327C2.81582 8.62327 2.66658 8.47403 2.66658 8.28994L2.66658 7.62327C2.66658 7.43918 2.81582 7.28994 2.99992 7.28994L10.9664 7.28994L8.05017 4.37369C7.92 4.24352 7.92 4.03246 8.05017 3.90229L8.52158 3.43088C8.65175 3.30071 8.86281 3.30071 8.99298 3.43088L12.7638 7.20167L13.2356 7.67353Z" fill="#889292"/>
-                    </svg>
-                </div>      */}
                 <div className="flex flex-row pt-[4px] w-full text-[16px]">
                     Bidder&nbsp;<div className="text-[#889292]">{shortenAddress(auction.highestBidder)}</div>
                 </div>                                                                       
@@ -289,8 +302,8 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
         )   
     } else if ((Number(auction.firstBidTime) + Number(auction.duration)) < time) {
         return (
-            <div className="flex flex-row flex-wrap w-full pt-[12px] pb-[16px] ">
-                <div className="flex flex-row w-full text-[18px]">
+            <div className="flex flex-row flex-wrap h-fit w-full pt-[12px] pb-[16px] ">
+                <div className="flex flex-row w-full text-[18px] pb-[2px]">
                     {metadata.metadata.name}
                 </div>
                 <div className="flex flex-row w-full text-[16px]">
@@ -309,8 +322,8 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                     </div>
                 </div>      
                 <button 
-                        className=" focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] hover:border-[1px] hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-fit rounded-[4px] w-full py-2 text-[16px] bg-[#1E1F22] text-white"
-                        disabled={!validSettle}
+                        className=" focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] hover:cursor-pointer hover:border-[1px] hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-[40px] h-min-[40px] rounded-[4px] w-full py-2 text-[16px] bg-[#1E1F22] text-white"
+                        disabled={!validSettle || !!settleError ? true : false}
                         onClick={()=>settleWrite()}
                     >
                         {settleCTA}
@@ -320,7 +333,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
     } else {
         return (
             <div className="flex flex-row flex-wrap w-full">
-                <div className="flex flex-row w-full text-[18px]">
+                <div className="flex flex-row w-full text-[18px] pb-[2px]">
                     collection:
                 </div>
                 <div className="flex flex-row w-full text-[16px]">

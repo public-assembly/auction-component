@@ -46,7 +46,7 @@ export function AuctionLogicFooter({time, auction, metadata}: any) {
         return <div></div>
     } else if (Number(auction.startTime) > time) {
         return (
-            <div className="flex flex-row flex-wrap w-full pt-[16px] border-t-[1px] border-[#C9D2D2]">
+            <div className="flex flex-row flex-wrap w-full pt-[16px] pb-[12px] border-t-[1px] border-[#C9D2D2]">
                 <div className="flex flex-row w-full text-[18px] pb-[8px]">
                     Starts in&nbsp;
                     <Countdown date={startTimeConverter(auction.startTime)} 
@@ -65,7 +65,7 @@ export function AuctionLogicFooter({time, auction, metadata}: any) {
         )
     } else if (auction.firstBidTime == "0") {
         return (
-            <div className="flex flex-row flex-wrap w-full pt-[16px] border-t-[1px] border-[#C9D2D2]">
+            <div className="flex flex-row flex-wrap w-full pt-[16px] pb-[12px] border-t-[1px] border-[#C9D2D2]">
                 <div className="flex flex-row w-full text-[18px] pb-[8px]">
                     Auction is live                                               
                 </div>   
@@ -79,7 +79,7 @@ export function AuctionLogicFooter({time, auction, metadata}: any) {
         )
     } else if ((Number(auction.firstBidTime) + Number(auction.duration)) > time) {
         return (
-            <div className="flex flex-row flex-wrap w-full pt-[16px] border-t-[1px] border-[#C9D2D2]">
+            <div className="flex flex-row flex-wrap w-full pt-[16px] pb-[12px] border-t-[1px] border-[#C9D2D2]">
                 <div className="flex flex-row w-full text-[18px] pb-[8px]">                    
                     <Countdown date={startTimeConverter(Number(auction.firstBidTime) + Number(auction.duration))} 
                         intervalDelay={1000}
