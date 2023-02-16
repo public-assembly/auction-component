@@ -215,7 +215,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                     {shortenAddress(metadata.mintInfo.originatorAddress)}
                     </div>
                 </div>                        
-                <div className="flex flex-row w-full text-[16px] pt-[8px]font-mono ">
+                <div className="flex flex-row w-full text-[16px] pt-[16px] font-mono ">
                     Ξ&nbsp;{auction.reservePrice}
                 </div>                                           
             </div>
