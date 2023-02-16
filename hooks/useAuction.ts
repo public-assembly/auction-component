@@ -29,7 +29,7 @@ import {useState, useEffect} from "react"
             duration: auctionData[5],
             startTime: auctionData[6],
             listingFeeRecipient: auctionData[7],
-            firstbidtime: auctionData[8],
+            firstBidTime: auctionData[8],
             listingFeeBps: auctionData[9]
         }
         return cleanedAuctionData
@@ -41,9 +41,9 @@ import {useState, useEffect} from "react"
 
     const noLiveAuctionData: array = {
         seller: '0x0000000000000000000000000000000000000000',
-        reservePrice: "0",
+        reservePrice: formatBigNumber("0"),
         sellerFundsRecipient: "0x0000000000000000000000000000000000000000",
-        highestBid: "0",
+        highestBid: formatBigNumber("0"),
         highestBidder: "0x0000000000000000000000000000000000000000",
         duration: "0",
         startTime: "0",
@@ -55,8 +55,8 @@ import {useState, useEffect} from "react"
     const auctionExistsNotStartedData: array = {
         seller: '0x806164c929Ad3A6f4bd70c2370b3Ef36c64dEaa8',
         reservePrice: formatBigNumber("10000000000000000"),
-        sellerFundsRecipient: "0x123000000000000000000000000000000000000345",
-        highestBid: "0",
+        sellerFundsRecipient: "0x806164c929Ad3A6f4bd70c2370b3Ef36c64dEaa8",
+        highestBid: formatBigNumber("0"),
         highestBidder: "0x0000000000000000000000000000000000000000",
         duration: "0",
         startTime: "1676637573", // crazy number is 32507613573 less crazy number is 1676637573
@@ -68,8 +68,8 @@ import {useState, useEffect} from "react"
     const startedNoReservePriceYet: array = {
         seller: '0x806164c929Ad3A6f4bd70c2370b3Ef36c64dEaa8',
         reservePrice: formatBigNumber("10000000000000000"),
-        sellerFundsRecipient: "0x123000000000000000000000000000000000000345",
-        highestBid: "0",
+        sellerFundsRecipient: "0x806164c929Ad3A6f4bd70c2370b3Ef36c64dEaa8",
+        highestBid: formatBigNumber("0"),
         highestBidder: "0x0000000000000000000000000000000000000000",
         duration: "0",
         startTime: "1676446773", // already started
@@ -81,10 +81,10 @@ import {useState, useEffect} from "react"
     const gotFirstBidNotDone: array = {
         seller: '0x806164c929Ad3A6f4bd70c2370b3Ef36c64dEaa8',
         reservePrice: formatBigNumber("10000000000000000"),
-        sellerFundsRecipient: "0x123000000000000000000000000000000000000345",
-        highestBid: "10000000000000000",
-        highestBidder: "0x4560000000000000000000000000000000456",
-        duration: "360000000", // hasnt finished yet
+        sellerFundsRecipient: "0x806164c929Ad3A6f4bd70c2370b3Ef36c64dEaa8",
+        highestBid: formatBigNumber("10000000000000000"),
+        highestBidder: "0x153D2A196dc8f1F6b9Aa87241864B3e4d4FEc170",
+        duration: "36000000", // hasnt finished yet
         startTime: "1676446773", // already started
         listingFeeRecipient: "0x0000000000000000000000000000000000000000",
         firstBidTime: "1676446850", // hit bid
@@ -94,13 +94,13 @@ import {useState, useEffect} from "react"
     const auctionDoneNotSettled: array = {
         seller: '0x806164c929Ad3A6f4bd70c2370b3Ef36c64dEaa8',
         reservePrice: formatBigNumber("10000000000000000"),
-        sellerFundsRecipient: "0x123000000000000000000000000000000000000345",
-        highestBid: "10000000000000000",
-        highestBidder: "0x4560000000000000000000000000000000456",
-        duration: "100", // auction finished
+        sellerFundsRecipient: "0x806164c929Ad3A6f4bd70c2370b3Ef36c64dEaa8",
+        highestBid: formatBigNumber("15000000000000000"),
+        highestBidder: "0x153D2A196dc8f1F6b9Aa87241864B3e4d4FEc170",
+        duration: "500", // auction finished
         startTime: "1676446773", // already started
         listingFeeRecipient: "0x0000000000000000000000000000000000000000",
-        firstBidTime: "1676446785", // hit bid
+        firstBidTime: "1676446830", // hit bid
         listingFeeBps: "0"
     }     
 
@@ -131,22 +131,24 @@ import {useState, useEffect} from "react"
             functionName: "auctionForNFT",
             args: [contract, tokenId],
             // cacheOnBlock: true,
-            // watch: true,
-            // catcheTime: 2_000,
+            watch: true,
+            catcheTime: 2_000,
             enabled: contract ? true : false
         })
 
-        // const cleanedAuctionData = data ? cleanIncomingAuctionData(data) : noLiveAuctionData // noLiveAuctionData auctionExistsNotStartedData startedNoReservePriceYet gotFirstBidNotDone auctionDoneNotSettled
-        const cleanedAuctionData = auctionExistsNotStartedData // noLiveAuctionData auctionExistsNotStartedData startedNoReservePriceYet gotFirstBidNotDone auctionDoneNotSettled
+        const cleanedAuctionData = data ? cleanIncomingAuctionData(data) : noLiveAuctionData // noLiveAuctionData auctionExistsNotStartedData startedNoReservePriceYet gotFirstBidNotDone auctionDoneNotSettled
+        // const cleanedAuctionData = auctionDoneNotSettled // noLiveAuctionData auctionExistsNotStartedData startedNoReservePriceYet gotFirstBidNotDone auctionDoneNotSettled
 
+
+        // CREATE AUCTION FLOW
         const { config } = usePrepareContractWrite({
             address: goerliZoraAddresses.ReserveAuctionListingEth,
             abi: auctionABI.abi,
             functionName: "createAuction",
             args: [
-                "0xc1e87f349c0673de48f6292e594c62b35bc270a7", // collection address
+                "0xa3ba36ce1af5fa6bb8ab35a61c8ae72293b38b32", // collection address
                 "1",  // tokenid
-                900, // 15 minutes
+                3600, // 900 = 15 minutes
                 "10000000000000000", // 0.01 ether reserve price
                 "0x806164c929Ad3A6f4bd70c2370b3Ef36c64dEaa8", // funds recip,
                 1676418306, // 645pm tues feb 14
@@ -157,9 +159,8 @@ import {useState, useEffect} from "react"
         })
 
         const { data: createAuctionData, write: createAuctionWrite } = useContractWrite(config)
-
-
     
+        // ZDK FLOW
         const args = {
             token: {
                 address: contract,
@@ -173,7 +174,6 @@ import {useState, useEffect} from "react"
         const tokenResponse = async (args: any) => {
             // const zdkResponseTokens = await (await zdk.token(args)).token?.token
             const zdkResponseTokens = await (await zdk.token(args)).token?.token
-            console.log("what is response: ", zdkResponseTokens)
             setMetadata(zdkResponseTokens)
         }
         
@@ -183,7 +183,6 @@ import {useState, useEffect} from "react"
             }},
             []
         )
-
 
     return {
         cleanedAuctionData,
