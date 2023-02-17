@@ -6,6 +6,7 @@ const nextConfig = {
     domains: [
       "bafybeieqevmswsepaxqgmy4i7ho7yby4xanb3w4lrckjzb7j7yyolmtuxa.ipfs.nftstorage.link",
       "ipfs.io",
+      "arweave.net"
     ]
   },
   webpack: (config) => {
