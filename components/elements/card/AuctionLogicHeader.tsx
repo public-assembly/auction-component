@@ -2,7 +2,8 @@
 import { shortenAddress } from '../../../utils'
 import {useState} from "react"
 import {usePrepareContractWrite, useContractWrite, useWaitForTransaction, useProvider} from 'wagmi'
-import goerliZoraAddresses from "@zoralabs/v3/dist/addresses/5.json";
+// import goerliZoraAddresses from "@zoralabs/v3/dist/addresses/1.json";
+import mainnetZoraAddresses from "@zoralabs/v3/dist/addresses/1.json"
 import auctionABI from "@zoralabs/v3/dist/artifacts/ReserveAuctionListingEth.sol/ReserveAuctionListingEth.json"
 import {BigNumber, utils, Contract} from "ethers"
 import { BasementProvider } from '@basementdev/ethers-provider';
@@ -42,7 +43,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
 
         // PLACE BID FLOW
         const { config: bidConfig, error: bidError } = usePrepareContractWrite({
-            address: goerliZoraAddresses.ReserveAuctionListingEth,
+            address: mainnetZoraAddresses.ReserveAuctionListingEth,
             abi: auctionABI.abi,
             functionName: "createBid",
             args: [
@@ -86,7 +87,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
         const validSettle: bool = validSettleCheck()
 
         const { config: settleConfig, error: settleError } = usePrepareContractWrite({
-            address: goerliZoraAddresses.ReserveAuctionListingEth,
+            address: mainnetZoraAddresses.ReserveAuctionListingEth,
             abi: auctionABI.abi,
             functionName: "settleAuction",
             args: [
