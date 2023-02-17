@@ -30,11 +30,11 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
 
     const validBid: bool = validBidCheck()    
 
-    console.log("reserve price converted: ", (Number(auction.reservePrice) * 10e18).toString())
-    console.log("bidInputConverted: ", bidInputConverted)
-    console.log("bid value eth", bidValue)
-    console.log("rserve price eth", (Number(auction.reservePrice)))
-    console.log("validBid: ", validBid)
+    // console.log("reserve price converted: ", (Number(auction.reservePrice) * 10e18).toString())
+    // console.log("bidInputConverted: ", bidInputConverted)
+    // console.log("bid value eth", bidValue)
+    // console.log("rserve price eth", (Number(auction.reservePrice)))
+    // console.log("validBid: ", validBid)
 
     // if highest bid isnt greater or equal to reserve price
         // then bed must be equal to at least reserve price
