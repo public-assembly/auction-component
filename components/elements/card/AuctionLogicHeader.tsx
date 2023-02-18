@@ -1,6 +1,7 @@
 // @ts-nocheck
 import {useState} from "react"
 import {usePrepareContractWrite, useContractWrite, useWaitForTransaction, useEnsName, useProvider} from 'wagmi'
+import { useAuth } from "hooks/useAuth";
 import goerliZoraAddresses from "@zoralabs/v3/dist/addresses/5.json";
 import mainnetZoraAddresses from "@zoralabs/v3/dist/addresses/1.json";
 import auctionABI from "@zoralabs/v3/dist/artifacts/ReserveAuctionListingEth.sol/ReserveAuctionListingEth.json"
@@ -9,6 +10,10 @@ import { OpenseaRedirect } from './OpenseaRedirect';
 import { EnsResolution } from './EnsResolution';
 
 export function AuctionLogicHeader({time, auction, metadata}: any) {
+
+    const { isConnected } = useAuth()
+
+    console.log("is connected: ", isConnected)
 
     // BID VALUE CALCS + CHECKS
     const [bidValue, setBidValue] = useState<number>('');
@@ -219,8 +224,8 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                     >
                     </input>
                     <button 
-                        className="disabled:bg-[#C9D2D2] disabled:bg-opacity-[40%] disabled:border-none disabled:text-[#C9D2D2] focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] hover:cursor-pointer hover:border-[1px] hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-[40px] min-h-[40px] rounded-[4px] cols-start-1 cols-end-2 row-start-0 row-end-1 w-full bg-[#1E1F22] text-white"
-                        disabled={!validBid || !!bidError ? true : false}
+                        className="disabled:bg-[#C9D2D2] disabled:bg-opacity-[40%] disabled:border-none disabled:text-[#C9D2D2] focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] disabled:cursor-default hover:cursor-pointer hover:border-[1px] hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-[40px] min-h-[40px] rounded-[4px] cols-start-1 cols-end-2 row-start-0 row-end-1 w-full bg-[#1E1F22] text-white"
+                        disabled={!isConnected || !validBid || !!bidError ? true : false}
                         onClick={()=>bidWrite()}
                     >
                         {bidCTA}
@@ -268,8 +273,8 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                     >
                     </input>
                     <button 
-                        className="disabled:bg-[#C9D2D2] disabled:bg-opacity-[40%] disabled:border-none disabled:text-[#C9D2D2] focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] hover:cursor-pointer hover:border-[1px] hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-[40px] min-h-[40px] rounded-[4px] cols-start-1 cols-end-2 row-start-0 row-end-1 w-full  bg-[#1E1F22] text-white"
-                        disabled={!validBid || !!bidError ? true : false}
+                        className="disabled:bg-[#C9D2D2] disabled:bg-opacity-[40%] disabled:border-none disabled:text-[#C9D2D2] disabled:cursor-default focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] hover:cursor-pointer hover:border-[1px] hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-[40px] min-h-[40px] rounded-[4px] cols-start-1 cols-end-2 row-start-0 row-end-1 w-full  bg-[#1E1F22] text-white"
+                        disabled={!isConnected || !validBid || !!bidError ? true : false}
                         onClick={()=>bidWrite()}
                     >
                         {bidCTA}
@@ -318,8 +323,8 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                     </div>
                 </div>      
                 <button 
-                        className=" focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] hover:cursor-pointer hover:border-[1px] hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-[40px] h-min-[40px] rounded-[4px] w-full py-2 text-[16px] bg-[#1E1F22] text-white"
-                        disabled={!validSettle || !!settleError ? true : false}
+                        className=" focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] hover:cursor-pointer hover:border-[1px] disabled:cursor-default hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-[40px] h-min-[40px] rounded-[4px] w-full py-2 text-[16px] bg-[#1E1F22] text-white"
+                        disabled={!isConnected || !validSettle || !!settleError ? true : false}
                         onClick={()=>settleWrite()}
                     >
                         {settleCTA}
