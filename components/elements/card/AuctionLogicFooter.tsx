@@ -1,6 +1,5 @@
 // @ts-nocheck
 import Countdown from "react-countdown"
-import { shortenAddress } from "utils";
 import { EnsResolution } from './EnsResolution';
 
 const countdownRenderer = ({ days, hours, minutes, seconds }: any) => {
@@ -19,7 +18,6 @@ const startTimeConverter = (startTimeUnixSeconds: any) => {
 export function AuctionLogicFooter({time, auction, metadata}: any) {
 
     const listedBy = auction ? auction.seller : ""
-    
 
     if (!time || !auction || !metadata) {
         return <div></div>
@@ -53,9 +51,7 @@ export function AuctionLogicFooter({time, auction, metadata}: any) {
                 <div className="flex flex-row w-full text-[16px] pb-[4px]">
                     Listed by&nbsp;
                     <div className="text-[#889292]">
-                    {/* {shortenAddress(listedBy)} */}
                     <EnsResolution address={listedBy} />
-                    {/* <EnsResolution metadata={metadata} /> */}
                     </div>
                 </div>                                                                
             </div>             
@@ -74,9 +70,7 @@ export function AuctionLogicFooter({time, auction, metadata}: any) {
                 <div className="flex flex-row w-full text-[16px] pb-[4px]">
                     Listed by&nbsp;
                     <div className="text-[#889292]">
-                        {/* {shortenAddress(listedBy)} */}
                         <EnsResolution address={listedBy} />
-                    {/* <EnsResolution auction={auction} /> */}
                     </div>
                 </div>                                                                
             </div>               

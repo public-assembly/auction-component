@@ -5,25 +5,16 @@ import { shortenAddress } from "utils"
 
 export function EnsResolution({address}: any) {
 
-    console.log("address", address)
-
-    console.log("ens auction: ", address)
-
-    // const address = metadata ? metadata.mintInfo.originatorAddress : ""
     const addressToResolve = address ? address : ""
 
-    console.log("address", address)
 
     const { data: ensName } = useEnsName({
         address: addressToResolve as string | undefined,
     })
 
     const actor = useMemo(() => 
-    ensName ? ensName : shortenAddress(addressToResolve)
-    , [ensName, addressToResolve])
-
-
-    console.log("bidder: ", addressToResolve)
+        ensName ? ensName : shortenAddress(addressToResolve)
+        , [ensName, addressToResolve])
 
     return (
         actor 

@@ -1,7 +1,7 @@
 import { AuctionLogicHeader } from 'components/elements/card/AuctionLogicHeader'
 import { AuctionLogicFooter } from 'components/elements/card/AuctionLogicFooter'
 
-export function AuctionLogic({auction, metadata, address, isConnected, zmmIsSuccess, zmmWaitLoading, zmmLoading, zmmWaitData, zmmData, zmmWrite}: any) {
+export function AuctionLogic({auction, metadata, isConnected}: any) {
 
     const currentUnixTime = Date.now() / 1000
 
@@ -12,14 +12,7 @@ export function AuctionLogic({auction, metadata, address, isConnected, zmmIsSucc
                     time={currentUnixTime} 
                     auction={auction} 
                     metadata={metadata} 
-                    address={address} 
                     isConnected={isConnected} 
-                    zmmWaitData={zmmWaitData}
-                    zmmLoading={zmmLoading}
-                    zmmWaitLoading={zmmWaitLoading}
-                    zmmIsSuccess={zmmIsSuccess}
-                    zmmWrite={zmmWrite}
-                    zmmData={zmmData}
                 />
                 <AuctionLogicFooter time={currentUnixTime} auction={auction} metadata={metadata} />
             </div>

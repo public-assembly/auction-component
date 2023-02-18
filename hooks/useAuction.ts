@@ -124,49 +124,7 @@ import {useState, useEffect} from "react"
 
     export function useAuction(contract: string, tokenId: string) {
 
-        const { address, isConnected } = useAuth();
-
-        const checkAddress = address ? address : ""
-
-        const {data: zmmData, isError: zmmError, isLoading: zmmLoading, isFetched: zmmFetched} = useContractRead({
-            address: mainnetZoraAddresses.ZoraModuleManager,
-            abi: zmmABI.abi,
-            functionName: "isModuleApproved",
-            args: [checkAddress, mainnetZoraAddresses.ReserveAuctionListingEth],
-            // cacheOnBlock: true,
-            watch: true,
-            catcheTime: 2_000,
-            enabled: checkAddress ? true : false
-        })
-
-        console.log("zmmdata: ", zmmData)
-
-
-        // Update module approval flow
-
-        const { config: zmmConfig, error: zmmConfigError } = usePrepareContractWrite({
-            address: mainnetZoraAddresses.ZoraModuleManager,
-            abi: zmmABI.abi,
-            functionName: "setApprovalForModule",
-            args: [mainnetZoraAddresses.ReserveAuctionListingEth, true],
-            enabled: zmmData != null && zmmData == false
-        })
-
-        console.log("zmm config", zmmConfig);
-        console.log("zmm config", zmmConfigError);
-
-        const { data: zmmWriteData, write: zmmWrite, isSuccess: zmmIsSuccess } = useContractWrite(zmmConfig)
-
-        const { data: zmmWaitData, isLoading: zmmWaitLoading } = useWaitForTransaction({
-            hash:  zmmWriteData?.hash,
-            onSuccess(zmmWaitData) {
-                console.log("txn complete: ", zmmWaitData)
-                console.log("txn hash: ", zmmWaitData.transactionHash)
-            }
-        })               
-
-
-        // const 
+        const { isConnected } = useAuth();
 
         // metadata state for zdk fetching
         const [metadata, setMetadata] = useState("")        
@@ -238,13 +196,6 @@ import {useState, useEffect} from "react"
         createAuctionData,
         createAuctionWrite,
         metadata,
-        address,
         isConnected,
-        zmmData,
-        zmmWaitData,
-        zmmLoading,
-        zmmWaitLoading,
-        zmmIsSuccess,
-        zmmWrite
     }
 }

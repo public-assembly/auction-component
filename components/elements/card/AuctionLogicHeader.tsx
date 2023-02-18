@@ -1,15 +1,14 @@
 // @ts-nocheck
 import {useState} from "react"
-import {usePrepareContractWrite, useContractWrite, useWaitForTransaction, useEnsName, useProvider} from 'wagmi'
-import { useAuth } from "hooks/useAuth";
+import {usePrepareContractWrite, useContractWrite, useWaitForTransaction} from 'wagmi'
 import goerliZoraAddresses from "@zoralabs/v3/dist/addresses/5.json";
 import mainnetZoraAddresses from "@zoralabs/v3/dist/addresses/1.json";
 import auctionABI from "@zoralabs/v3/dist/artifacts/ReserveAuctionListingEth.sol/ReserveAuctionListingEth.json"
-import {BigNumber, utils, Contract} from "ethers"
+import {BigNumber, utils} from "ethers"
 import { OpenseaRedirect } from './OpenseaRedirect';
 import { EnsResolution } from './EnsResolution';
 
-export function AuctionLogicHeader({time, auction, metadata, address, isConnected, zmmData, zmmWaitData, zmmLoading, zmmWaitLoading, zmmIsSuccess, zmmWrite}: any) {
+export function AuctionLogicHeader({time, auction, metadata, isConnected}: any) {
 
     const bidder = auction ? auction.highestBidder : ""
 
@@ -148,13 +147,7 @@ export function AuctionLogicHeader({time, auction, metadata, address, isConnecte
         ? svgLoader()
         : settleIsSuccess
         ? "Settled"
-        : "Settle auction"
-
-    const approveCTA = zmmLoading || zmmWaitLoading
-        ? svgLoader()
-        : zmmIsSuccess
-        ? "Approved"
-        : "Approve zora v3 module"        
+        : "Settle auction" 
 
     if (!time || !auction || !metadata) {
         return (
