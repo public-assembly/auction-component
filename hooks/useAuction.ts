@@ -133,7 +133,6 @@ import {useState, useEffect} from "react"
         ],
     })
 
-
     export function useAuction(contract: string, tokenId: string) {
 
         // metadata state for zdk fetching
@@ -171,6 +170,7 @@ import {useState, useEffect} from "react"
                 "0x806164c929Ad3A6f4bd70c2370b3Ef36c64dEaa8" // listing fee recip
 
             ],
+            enabled: false
         })
 
         const { data: createAuctionData, write: createAuctionWrite } = useContractWrite(config)
@@ -180,8 +180,6 @@ import {useState, useEffect} from "react"
             token: {
                 address: contract,
                 tokenId: tokenId
-                // address: "0xc1e87f349c0673de48f6292e594c62b35bc270a7",
-                // tokenId: "1"            
             },
             includeFullDetails: true // Optional, provides more data on the NFT such as all historical events
         }

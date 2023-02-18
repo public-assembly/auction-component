@@ -1,11 +1,6 @@
 // @ts-nocheck
-
-import { shortenAddress } from '../../../utils'
 import Countdown from "react-countdown"
-import {useState} from "react"
-import {usePrepareContractWrite, useContractWrite} from 'wagmi'
-import goerliZoraAddresses from "@zoralabs/v3/dist/addresses/5.json";
-import auctionABI from "@zoralabs/v3/dist/artifacts/ReserveAuctionListingEth.sol/ReserveAuctionListingEth.json"
+import { EnsResolution } from './EnsResolution';
 
 const countdownRenderer = ({ days, hours, minutes, seconds }: any) => {
     return (
@@ -21,24 +16,6 @@ const startTimeConverter = (startTimeUnixSeconds: any) => {
 }
 
 export function AuctionLogicFooter({time, auction, metadata}: any) {
-
-    // const bidHandler = () => {
-
-    // }
-
-    // const translateENS = (inputAddress: `0x${string}` | undefined) => {
-
-    //     const { data } = useEnsName({
-    //         address: inputAddress
-    //     })
-    //     return !!data ? data : shortenAddress(inputAddress)
-    // }    
-
-    // console.log('whats up with auction', auction)
-    // console.log("whats now?", time)
-    // console.log("whats starttime?", Number(auction.startTime))
-
-    // console.log(Number(auction.startTime) < time ? true : false)
 
     if (!time || !auction || !metadata) {
         return <div></div>
@@ -58,7 +35,7 @@ export function AuctionLogicFooter({time, auction, metadata}: any) {
                 <div className="flex flex-row w-full text-[16px] pb-[4px]">
                     Listed by&nbsp;
                     <div className="text-[#889292]">
-                    {shortenAddress(auction.seller)}
+                    <EnsResolution metadata={metadata} />
                     </div>
                 </div>                                                                
             </div> 
@@ -72,7 +49,7 @@ export function AuctionLogicFooter({time, auction, metadata}: any) {
                 <div className="flex flex-row w-full text-[16px] pb-[4px]">
                     Listed by&nbsp;
                     <div className="text-[#889292]">
-                    {shortenAddress(auction.seller)}
+                    <EnsResolution metadata={metadata} />
                     </div>
                 </div>                                                                
             </div>             
@@ -91,7 +68,7 @@ export function AuctionLogicFooter({time, auction, metadata}: any) {
                 <div className="flex flex-row w-full text-[16px] pb-[4px]">
                     Listed by&nbsp;
                     <div className="text-[#889292]">
-                    {shortenAddress(auction.seller)}
+                    <EnsResolution metadata={metadata} />
                     </div>
                 </div>                                                                
             </div>               
@@ -102,7 +79,7 @@ export function AuctionLogicFooter({time, auction, metadata}: any) {
                 <div className="flex flex-row w-full text-[16px]">
                     Listed by&nbsp;
                     <div className="text-[#889292]">
-                    {shortenAddress(auction.seller)}
+                    <EnsResolution metadata={metadata} />
                     </div>
                 </div>                  
             </div>                            
