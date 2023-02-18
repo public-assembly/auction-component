@@ -54,7 +54,6 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
         args: [
             metadata.collectionAddress, // collection address
             metadata.tokenId,  // tokenid
-
         ],
         enabled: validBid ? true : false,
         overrides: {

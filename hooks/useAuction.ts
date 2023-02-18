@@ -52,6 +52,20 @@ import {useState, useEffect} from "react"
         listingFeeBps: "0"
     }
 
+    // const fetchAuction: array = {
+    //     seller: address,
+    //     reservePrice: formatBigNumber("0"),
+    //     sellerFundsRecipient: "0xbC68dee71fd19C6eb4028F98F3C3aB62aAD6FeF3",
+    //     highestBid: formatBigNumber("0"),
+    //     highestBidder: "0x0000000000000000000000000000000000000000",
+    //     duration: "0",
+    //     startTime: "0",
+    //     listingFeeRecipient: "0x0000000000000000000000000000000000000000",
+    //     firstBidTime: "0",
+    //     listingFeeBps: "0"
+        
+    // }
+
     const auctionExistsNotStartedData: array = {
         seller: '0x806164c929Ad3A6f4bd70c2370b3Ef36c64dEaa8',
         reservePrice: formatBigNumber("10000000000000000"),
@@ -113,7 +127,6 @@ import {useState, useEffect} from "react"
         endpoint: API_ENDPOINT,
         networks: [
         {
-            // chain: ZDKChain.Goerli,
             chain: ZDKChain.Mainnet,
             network: ZDKNetwork.Ethereum,
         },
@@ -126,7 +139,7 @@ import {useState, useEffect} from "react"
         const [metadata, setMetadata] = useState("")        
 
         const {data, isError, isLoading, isFetched, isSuccess, status} = useContractRead({
-            address: mainnetZoraAddresses.ReserveAuctionListingEth, // goerliZoraAddresses.ReserveAuctionListingEth,
+            address: mainnetZoraAddresses.ReserveAuctionListingEth,
             abi: auctionABI.abi,
             functionName: "auctionForNFT",
             args: [contract, tokenId],
@@ -136,13 +149,14 @@ import {useState, useEffect} from "react"
             enabled: contract ? true : false
         })
 
-        const cleanedAuctionData = data ? cleanIncomingAuctionData(data) : noLiveAuctionData // noLiveAuctionData auctionExistsNotStartedData startedNoReservePriceYet gotFirstBidNotDone auctionDoneNotSettled
+        const cleanedAuctionData = data ? cleanIncomingAuctionData(data) : noLiveAuctionData// noLiveAuctionData auctionExistsNotStartedData startedNoReservePriceYet gotFirstBidNotDone auctionDoneNotSettled
         // const cleanedAuctionData = auctionDoneNotSettled // noLiveAuctionData auctionExistsNotStartedData startedNoReservePriceYet gotFirstBidNotDone auctionDoneNotSettled
+
 
 
         // CREATE AUCTION FLOW
         const { config } = usePrepareContractWrite({
-            address: goerliZoraAddresses.ReserveAuctionListingEth,
+            address: mainnetZoraAddresses.ReserveAuctionListingEth,
             abi: auctionABI.abi,
             functionName: "createAuction",
             args: [
