@@ -8,7 +8,7 @@ const Home: NextPage = () => {
   return (
     <>
       <section id="home-page" className="grid grid-cols-1 space-y-20 items-start h-screen text-black">
-      <AuctionContainer collectionAddress={collection} tokenId={"3"} />
+        <AuctionContainer collectionAddress={collection} tokenId={"3"} />
         <AuctionContainer collectionAddress={collection} tokenId={"4"} />
         <AuctionContainer collectionAddress={collection} tokenId={"5"} />
         <AuctionContainer collectionAddress={collection} tokenId={"6"} />

@@ -11,11 +11,14 @@ import { EnsResolution } from './EnsResolution';
 
 export function AuctionLogicHeader({time, auction, metadata, address, isConnected, zmmData, zmmWaitData, zmmLoading, zmmWaitLoading, zmmIsSuccess, zmmWrite}: any) {
 
+    const bidder = auction ? auction.highestBidder : ""
+
+    const createdBy = metadata ? metadata.mintInfo.originatorAddress : ""
+
     // BID VALUE CALCS + CHECKS
     const [bidValue, setBidValue] = useState<number>('');
     const bidInputPlain: string = bidValue ? utils.parseEther(bidValue.toString()) : ""
     const bidInputConverted: string = bidInputPlain != "" ? BigNumber.from(bidInputPlain).toString() : ""
-
 
     // if highest bid isnt greater or equal to reserve price
         // then bed must be equal to at least reserve price
@@ -173,7 +176,7 @@ export function AuctionLogicHeader({time, auction, metadata, address, isConnecte
                 <div className="flex flex-row w-full text-[16px]">
                     by&nbsp;
                     <div className="text-[#889292]">
-                    <EnsResolution metadata={metadata} />
+                    <EnsResolution address={createdBy} />
                     </div>
                 </div>                    
             </div>
@@ -187,7 +190,7 @@ export function AuctionLogicHeader({time, auction, metadata, address, isConnecte
                 <div className="flex flex-row w-full text-[16px]">
                     by&nbsp;
                     <div className="text-[#889292]">
-                        <EnsResolution metadata={metadata} />
+                        <EnsResolution address={createdBy} />
                     </div>
                 </div>                        
                 <div className="flex flex-row w-full text-[16px] pt-[16px] font-mono ">
@@ -207,7 +210,7 @@ export function AuctionLogicHeader({time, auction, metadata, address, isConnecte
                 <div className="flex flex-row w-full text-[16px]">
                     by&nbsp;
                     <div className="text-[#889292]">
-                        <EnsResolution metadata={metadata} />
+                        <EnsResolution address={createdBy} />
                     </div>
                 </div>            
                 <div className="mt-[12px] grid-rows-1 grid-cols-[2fr_1fr] flex flex-row items-center h-fit space-x-3 w-full text-[16px] ">
@@ -256,7 +259,7 @@ export function AuctionLogicHeader({time, auction, metadata, address, isConnecte
                 <div className="flex flex-row w-full text-[16px]">
                     by&nbsp;
                     <div className="text-[#889292]">
-                    <EnsResolution metadata={metadata} />
+                    <EnsResolution address={createdBy} />
                     </div>
                 </div>                    
                 <div className="mt-[12px] grid-rows-1 grid-cols-[2fr_1fr] flex flex-row items-center h-fit space-x-3 w-full text-[16px] ">
@@ -295,7 +298,7 @@ export function AuctionLogicHeader({time, auction, metadata, address, isConnecte
                     Current Bid&nbsp;<div className="text-[#889292]">Ξ&nbsp;{auction.highestBid}</div>
                 </div>     
                 <div className="flex flex-row pt-[4px] w-full text-[16px]">
-                    Bidder&nbsp;<div className="text-[#889292]"><EnsResolution metadata={metadata} /></div>
+                    Bidder&nbsp;<div className="text-[#889292]"><EnsResolution address={bidder} /></div>
                 </div>                                                                       
             </div>        
         )   
@@ -311,7 +314,7 @@ export function AuctionLogicHeader({time, auction, metadata, address, isConnecte
                 <div className="flex flex-row w-full text-[16px]">
                     by&nbsp;
                     <div className="text-[#889292]">
-                    <EnsResolution metadata={metadata} />
+                    <EnsResolution address={createdBy} />
                     </div>
                 </div>                        
                 <div className="flex flex-row w-full text-[16px] pt-[16px] font-mono ">

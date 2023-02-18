@@ -1,5 +1,6 @@
 // @ts-nocheck
 import Countdown from "react-countdown"
+import { shortenAddress } from "utils";
 import { EnsResolution } from './EnsResolution';
 
 const countdownRenderer = ({ days, hours, minutes, seconds }: any) => {
@@ -17,9 +18,12 @@ const startTimeConverter = (startTimeUnixSeconds: any) => {
 
 export function AuctionLogicFooter({time, auction, metadata}: any) {
 
+    const listedBy = auction ? auction.seller : ""
+    
+
     if (!time || !auction || !metadata) {
         return <div></div>
-    } else if (auction.seller == "0x0000000000000000000000000000000000000000") {
+    } else if (listedBy == "0x0000000000000000000000000000000000000000") {
         return <div></div>
     } else if (Number(auction.startTime) > time) {
         return (
@@ -35,7 +39,7 @@ export function AuctionLogicFooter({time, auction, metadata}: any) {
                 <div className="flex flex-row w-full text-[16px] pb-[4px]">
                     Listed by&nbsp;
                     <div className="text-[#889292]">
-                    <EnsResolution metadata={metadata} />
+                    <EnsResolution auction={listedBy} />
                     </div>
                 </div>                                                                
             </div> 
@@ -49,7 +53,9 @@ export function AuctionLogicFooter({time, auction, metadata}: any) {
                 <div className="flex flex-row w-full text-[16px] pb-[4px]">
                     Listed by&nbsp;
                     <div className="text-[#889292]">
-                    <EnsResolution metadata={metadata} />
+                    {/* {shortenAddress(listedBy)} */}
+                    <EnsResolution address={listedBy} />
+                    {/* <EnsResolution metadata={metadata} /> */}
                     </div>
                 </div>                                                                
             </div>             
@@ -68,7 +74,9 @@ export function AuctionLogicFooter({time, auction, metadata}: any) {
                 <div className="flex flex-row w-full text-[16px] pb-[4px]">
                     Listed by&nbsp;
                     <div className="text-[#889292]">
-                    <EnsResolution metadata={metadata} />
+                        {/* {shortenAddress(listedBy)} */}
+                        <EnsResolution address={listedBy} />
+                    {/* <EnsResolution auction={auction} /> */}
                     </div>
                 </div>                                                                
             </div>               
@@ -79,7 +87,7 @@ export function AuctionLogicFooter({time, auction, metadata}: any) {
                 <div className="flex flex-row w-full text-[16px]">
                     Listed by&nbsp;
                     <div className="text-[#889292]">
-                    <EnsResolution metadata={metadata} />
+                    <EnsResolution address={listedBy} />
                     </div>
                 </div>                  
             </div>                            

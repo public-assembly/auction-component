@@ -3,19 +3,29 @@ import { useMemo } from "react"
 import { useEnsName } from "wagmi"
 import { shortenAddress } from "utils"
 
-export function EnsResolution({metadata}: any) {
+export function EnsResolution({address}: any) {
 
-    const address = metadata ? metadata.mintInfo.originatorAddress : ""
+    console.log("address", address)
+
+    console.log("ens auction: ", address)
+
+    // const address = metadata ? metadata.mintInfo.originatorAddress : ""
+    const addressToResolve = address ? address : ""
+
+    console.log("address", address)
 
     const { data: ensName } = useEnsName({
-        address: address as string | undefined,
+        address: addressToResolve as string | undefined,
     })
 
-    const bidder = useMemo(() => 
-    ensName ? ensName : shortenAddress(address)
-    , [ensName, address])
+    const actor = useMemo(() => 
+    ensName ? ensName : shortenAddress(addressToResolve)
+    , [ensName, addressToResolve])
+
+
+    console.log("bidder: ", addressToResolve)
 
     return (
-        bidder 
+        actor 
     )
 }
