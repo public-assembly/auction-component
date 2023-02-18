@@ -9,7 +9,6 @@ import { SWRConfig } from 'swr'
 import '@rainbow-me/rainbowkit/styles.css';
 
 const { chains, provider } = configureChains(
-  // [goerli],
   [mainnet],
   [
     alchemyProvider({

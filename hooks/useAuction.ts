@@ -104,8 +104,7 @@ import {useState, useEffect} from "react"
         listingFeeBps: "0"
     }     
 
-
-    // SETTING CONSTANTS
+    // ZDK CONSTANTS
 
     const API_ENDPOINT = "https://api.zora.co/graphql";
             
@@ -113,7 +112,6 @@ import {useState, useEffect} from "react"
         endpoint: API_ENDPOINT,
         networks: [
         {
-            // chain: ZDKChain.Goerli,
             chain: ZDKChain.Mainnet,
             network: ZDKNetwork.Ethereum,
         },
@@ -126,7 +124,7 @@ import {useState, useEffect} from "react"
         const [metadata, setMetadata] = useState("")        
 
         const {data, isError, isLoading, isFetched, isSuccess, status} = useContractRead({
-            address: mainnetZoraAddresses.ReserveAuctionListingEth, // goerliZoraAddresses.ReserveAuctionListingEth,
+            address: mainnetZoraAddresses.ReserveAuctionListingEth,
             abi: auctionABI.abi,
             functionName: "auctionForNFT",
             args: [contract, tokenId],
@@ -136,13 +134,12 @@ import {useState, useEffect} from "react"
             enabled: contract ? true : false
         })
 
-        const cleanedAuctionData = data ? cleanIncomingAuctionData(data) : noLiveAuctionData // noLiveAuctionData auctionExistsNotStartedData startedNoReservePriceYet gotFirstBidNotDone auctionDoneNotSettled
+        const cleanedAuctionData = data ? cleanIncomingAuctionData(data) : noLiveAuctionData// noLiveAuctionData auctionExistsNotStartedData startedNoReservePriceYet gotFirstBidNotDone auctionDoneNotSettled
         // const cleanedAuctionData = auctionDoneNotSettled // noLiveAuctionData auctionExistsNotStartedData startedNoReservePriceYet gotFirstBidNotDone auctionDoneNotSettled
-
 
         // CREATE AUCTION FLOW
         const { config } = usePrepareContractWrite({
-            address: goerliZoraAddresses.ReserveAuctionListingEth,
+            address: mainnetZoraAddresses.ReserveAuctionListingEth,
             abi: auctionABI.abi,
             functionName: "createAuction",
             args: [
