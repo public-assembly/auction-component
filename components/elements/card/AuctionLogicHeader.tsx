@@ -9,11 +9,18 @@ import {BigNumber, utils, Contract} from "ethers"
 import { OpenseaRedirect } from './OpenseaRedirect';
 import { EnsResolution } from './EnsResolution';
 
-export function AuctionLogicHeader({time, auction, metadata}: any) {
+export function AuctionLogicHeader({time, auction, metadata, address, isConnected, zmmData, zmmWaitData, zmmLoading, zmmWaitLoading, zmmIsSuccess, zmmWrite}: any) {
 
-    const { isConnected } = useAuth()
+    console.log("is zmm data right?", zmmData)
+    
 
-    console.log("is connected: ", isConnected)
+    // const checkApproval = () => {
+
+    // }
+    
+    // const isApproved
+
+    // console.log("is connected: ", isConnected)
 
     // BID VALUE CALCS + CHECKS
     const [bidValue, setBidValue] = useState<number>('');
@@ -151,6 +158,11 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
         ? "Settled"
         : "Settle auction"
 
+    const approveCTA = zmmLoading || zmmWaitLoading
+        ? svgLoader()
+        : zmmIsSuccess
+        ? "Approved"
+        : "Approve zora v3 module"        
 
     if (!time || !auction || !metadata) {
         return (
@@ -208,29 +220,43 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                     <div className="text-[#889292]">
                         <EnsResolution metadata={metadata} />
                     </div>
-                </div>                        
-                <div className="mt-[12px] grid-rows-1 grid-cols-[2fr_1fr] flex flex-row items-center h-fit space-x-3 w-full text-[16px] ">
-                    <input 
-                        type="number"
-                        placeholder={`Ξ ${bidFloor} OR MORE`}
-                        className={`${!!bidError?.message ? "focus:outline focus:outline-1 focus:outline-red-500" : "" } border-none px-2 h-[40px] h-min-[40px] cols-start-0 cols-end-1 row-start-0 row-end-1 text-[14px] font-mono bg-[#EAECEB] rounded-[4px]`}
-                        value={bidValue}
-                        onChange={(e) => {
-                            e.preventDefault();   
-                            setBidValue((current: number) => {
-                                return e.target.value
-                            })
-                        }}
-                    >
-                    </input>
+                </div>            
+                <>
+                { zmmData == true ? (
+                    <div className="mt-[12px] grid-rows-1 grid-cols-[2fr_1fr] flex flex-row items-center h-fit space-x-3 w-full text-[16px] ">
+                        <input 
+                            type="number"
+                            placeholder={`Ξ ${bidFloor} OR MORE`}
+                            className={`${!!bidError?.message ? "focus:outline focus:outline-1 focus:outline-red-500" : "" } border-none px-2 h-[40px] h-min-[40px] cols-start-0 cols-end-1 row-start-0 row-end-1 text-[14px] font-mono bg-[#EAECEB] rounded-[4px]`}
+                            value={bidValue}
+                            onChange={(e) => {
+                                e.preventDefault();   
+                                setBidValue((current: number) => {
+                                    return e.target.value
+                                })
+                            }}
+                        >
+                        </input>
+                        <button 
+                            className="disabled:bg-[#C9D2D2] disabled:bg-opacity-[40%] disabled:border-none disabled:text-[#C9D2D2] focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] disabled:cursor-default hover:cursor-pointer hover:border-[1px] hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-[40px] min-h-[40px] rounded-[4px] cols-start-1 cols-end-2 row-start-0 row-end-1 w-full bg-[#1E1F22] text-white"
+                            disabled={!isConnected || !validBid || !!bidError ? true : false}
+                            onClick={()=>bidWrite()}
+                        >
+                            {bidCTA}
+                        </button>
+                    </div>                       
+                ) : (
+                <div className="pt-[12px] w-full">                 
                     <button 
-                        className="disabled:bg-[#C9D2D2] disabled:bg-opacity-[40%] disabled:border-none disabled:text-[#C9D2D2] focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] disabled:cursor-default hover:cursor-pointer hover:border-[1px] hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-[40px] min-h-[40px] rounded-[4px] cols-start-1 cols-end-2 row-start-0 row-end-1 w-full bg-[#1E1F22] text-white"
-                        disabled={!isConnected || !validBid || !!bidError ? true : false}
-                        onClick={()=>bidWrite()}
+                        className=" focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] hover:cursor-pointer hover:border-[1px] disabled:cursor-default hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-[40px] h-min-[40px] rounded-[4px] w-full py-2 text-[16px] bg-[#1E1F22] text-white flex flex-row justify-center items-center"
+                        disabled={!isConnected}
+                        onClick={()=>zmmWrite()}
                     >
-                        {bidCTA}
-                    </button>
-                </div>       
+                        {approveCTA}
+                    </button>        
+                </div>   
+                )}
+                </>                
                 <>
                     {!!bidError?.message ? (
                         <div className="pt-[12px] text-red-500 text-[14px]">
@@ -240,7 +266,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                     <div>                        
                     </div>
                     )}
-                </>                                                                
+                </>                                                              
             </div>            
         )
     } else if ((Number(auction.firstBidTime) + Number(auction.duration)) > time) {
@@ -257,29 +283,44 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                     <div className="text-[#889292]">
                     <EnsResolution metadata={metadata} />
                     </div>
-                </div>                        
-                <div className="mt-[12px] grid-rows-1 grid-cols-[2fr_1fr] flex flex-row items-center h-fit space-x-3 w-full text-[16px] ">
-                    <input 
-                        type="number"
-                        placeholder={`Ξ ${bidFloor} OR MORE`}
-                        className={` ${!!bidError?.message ? "focus:outline focus:outline-1 focus:outline-red-500" : "" } border-none px-2 h-[40px] h-min-[40px] cols-start-0 cols-end-1 row-start-0 row-end-1 text-[14px] font-mono bg-[#EAECEB] rounded-[4px]`}
-                        value={bidValue}
-                        onChange={(e) => {
-                            e.preventDefault();
-                            setBidValue((current: number) => {
-                                return e.target.value
-                            })
-                        }}
-                    >
-                    </input>
-                    <button 
-                        className="disabled:bg-[#C9D2D2] disabled:bg-opacity-[40%] disabled:border-none disabled:text-[#C9D2D2] disabled:cursor-default focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] hover:cursor-pointer hover:border-[1px] hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-[40px] min-h-[40px] rounded-[4px] cols-start-1 cols-end-2 row-start-0 row-end-1 w-full  bg-[#1E1F22] text-white"
-                        disabled={!isConnected || !validBid || !!bidError ? true : false}
-                        onClick={()=>bidWrite()}
-                    >
-                        {bidCTA}
-                    </button>
-                </div>  
+                </div>       
+                <>
+                
+                { zmmData == true ? (                 
+                    <div className="mt-[12px] grid-rows-1 grid-cols-[2fr_1fr] flex flex-row items-center h-fit space-x-3 w-full text-[16px] ">
+                        <input 
+                            type="number"
+                            placeholder={`Ξ ${bidFloor} OR MORE`}
+                            className={` ${!!bidError?.message ? "focus:outline focus:outline-1 focus:outline-red-500" : "" } border-none px-2 h-[40px] h-min-[40px] cols-start-0 cols-end-1 row-start-0 row-end-1 text-[14px] font-mono bg-[#EAECEB] rounded-[4px]`}
+                            value={bidValue}
+                            onChange={(e) => {
+                                e.preventDefault();
+                                setBidValue((current: number) => {
+                                    return e.target.value
+                                })
+                            }}
+                        >
+                        </input>
+                        <button 
+                            className="disabled:bg-[#C9D2D2] disabled:bg-opacity-[40%] disabled:border-none disabled:text-[#C9D2D2] disabled:cursor-default focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] hover:cursor-pointer hover:border-[1px] hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-[40px] min-h-[40px] rounded-[4px] cols-start-1 cols-end-2 row-start-0 row-end-1 w-full  bg-[#1E1F22] text-white"
+                            disabled={!isConnected || !validBid || !!bidError ? true : false}
+                            onClick={()=>bidWrite()}
+                        >
+                            {bidCTA}
+                        </button>
+                    </div>  
+                ) : (
+                    <div className="pt-[12px] w-full">                 
+                        <button 
+                            className=" focus:bg-[#EAECEB] focus:border-[1px] focus:border-[#1E1F22] hover:cursor-pointer hover:border-[1px] disabled:cursor-default hover:border-[#1E1F22] focus:text-[#1E1F22] hover:bg-[#889292] border-[1px] border-[#1E1F22] px-2 h-[40px] h-min-[40px] rounded-[4px] w-full py-2 text-[16px] bg-[#1E1F22] text-white flex flex-row justify-center items-center"
+                            disabled={!isConnected}
+                            onClick={()=>zmmWrite()}
+                        >
+                            {approveCTA}
+                        </button>        
+                    </div>   
+                )}
+                </>    
                 <>
                     {!!bidError?.message ? (
                         <div className="pt-[12px] text-red-500 text-[14px]">
