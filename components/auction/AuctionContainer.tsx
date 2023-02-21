@@ -15,10 +15,13 @@ export function AuctionContainer({collectionAddress, tokenId}) {
         <div className="flex flex-row  flex-wrap w-[90%] sm:w-[75%] justify-self-center items-start space-y-1">
             <AuctionMedia metadata={metadata} />        
             <AuctionLogic 
-            auction={cleanedAuctionData} 
-            metadata={metadata} 
-            isConnected={isConnected} 
+                auction={cleanedAuctionData} 
+                metadata={metadata} 
+                isConnected={isConnected} 
             />    
         </div>
     )
 }
+
+
+
