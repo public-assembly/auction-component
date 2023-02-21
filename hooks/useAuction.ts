@@ -1,26 +1,12 @@
 // @ts-nocheck
 
-import {
-    useAccount,
-    useEnsName,
-    usePrepareContractWrite,
-    useWaitForTransaction,
-    useContractWrite,
-    useContractRead,
-    useContractReads
-} from 'wagmi'
-
+import {useContractRead} from 'wagmi'
 import goerliZoraAddresses from "@zoralabs/v3/dist/addresses/5.json";
 import mainnetZoraAddresses from "@zoralabs/v3/dist/addresses/1.json";
 import auctionABI from "@zoralabs/v3/dist/artifacts/ReserveAuctionListingEth.sol/ReserveAuctionListingEth.json"
-import zmmABI from "@zoralabs/v3/dist/artifacts/ZoraModuleManager.sol/ZoraModuleManager.json"
-
 import {BigNumber, utils} from "ethers"
-
-import { ZDK, ZDKChain, ZDKNetwork } from '@zoralabs/zdk';
-
-import { useAuth } from './useAuth';
-
+import {ZDK, ZDKChain, ZDKNetwork} from '@zoralabs/zdk';
+import {useAuth} from './useAuth';
 import {useState, useEffect} from "react"
 
     const cleanIncomingAuctionData = (auctionData: any) => {
@@ -140,29 +126,9 @@ import {useState, useEffect} from "react"
             enabled: contract ? true : false
         })
 
-        const cleanedAuctionData = data ? cleanIncomingAuctionData(data) : noLiveAuctionData// noLiveAuctionData auctionExistsNotStartedData startedNoReservePriceYet gotFirstBidNotDone auctionDoneNotSettled
+        const cleanedAuctionData = data ? cleanIncomingAuctionData(data) : noLiveAuctionData
+        /* for testing purposes: */
         // const cleanedAuctionData = auctionDoneNotSettled // noLiveAuctionData auctionExistsNotStartedData startedNoReservePriceYet gotFirstBidNotDone auctionDoneNotSettled
-
-        // CREATE AUCTION FLOW
-        const { config } = usePrepareContractWrite({
-            address: mainnetZoraAddresses.ReserveAuctionListingEth,
-            abi: auctionABI.abi,
-            functionName: "createAuction",
-            args: [
-                "0xa3ba36ce1af5fa6bb8ab35a61c8ae72293b38b32", // collection address
-                "6",  // tokenid
-                3600, // 900 = 15 minutes
-                "10000000000000000", // 0.01 ether reserve price
-                "0x806164c929Ad3A6f4bd70c2370b3Ef36c64dEaa8", // funds recip,
-                1696537313, // unix time
-                0, // 0 listing fee bps
-                "0x806164c929Ad3A6f4bd70c2370b3Ef36c64dEaa8" // listing fee recip
-
-            ],
-            enabled: false
-        })
-
-        const { data: createAuctionData, write: createAuctionWrite } = useContractWrite(config)
     
         // ZDK FLOW
         const args = {
@@ -174,7 +140,6 @@ import {useState, useEffect} from "react"
         }
         
         const tokenResponse = async (args: any) => {
-            // const zdkResponseTokens = await (await zdk.token(args)).token?.token
             const zdkResponseTokens = await (await zdk.token(args)).token?.token
             setMetadata(zdkResponseTokens)
         }
@@ -193,9 +158,7 @@ import {useState, useEffect} from "react"
         isFetched,
         isSuccess,
         status,
-        createAuctionData,
-        createAuctionWrite,
         metadata,
-        isConnected,
+        isConnected
     }
 }

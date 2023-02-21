@@ -4,7 +4,6 @@
 
 :root {
   --header-height: 100px;
-  --pa-pink: #FF89DE;
 }
 
 html,
@@ -14,7 +13,7 @@ body {
   font-family: helvetica, "Times New Roman", Times, serif;
   font-weight: 300;
   font-size: 18px;
-  background-color: #EAECEB;
+  background-color: #dddcdc;
   color: #1E1F22;
 }
 
@@ -29,58 +28,4 @@ a {
 
 header {
   height: var(--header-height);
-}
-
-main {
-  min-height: calc(100vh - var(--header-height));
-}
-
-.text-underline {
-  position: relative;
-}
-
-.text-underline:after {
-  content: '';
-  width: 100%;
-  border-bottom: 1px solid #fff;
-  display: block;
-  position: absolute;
-  bottom: 4px;
-}
-
-.text-underline:hover:after {
-  border-color: var(--pa-pink);
-}
-
-.pa--hero {
-  padding-bottom: var(--header-height);
-}
-
-/* Style Drops UI */
-/* .drops-ui__mint-button--button,
-.connect__button {
-  @apply w-auto text-underline
-} */
-
-.drops-ui__mint-button--button {
-  @apply w-auto text-underline
-}
-
-@keyframes pulse {
-  from {
-    opacity: .5;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.mint-prompt {
-  position: relative;
-}
-
-.mint-prompt:before {
-  content: '● ';
-  color: #32CD32;
-  animation: pulse infinite 1000ms alternate;
 }
