@@ -8,11 +8,7 @@ const Home: NextPage = () => {
   return (
     <>
       <section id="home-page" className="grid grid-cols-1 space-y-20 items-start h-screen text-black">
-        <AuctionContainer collectionAddress={collection} tokenId={"3"} />
         <AuctionContainer collectionAddress={collection} tokenId={"4"} />
-        <AuctionContainer collectionAddress={collection} tokenId={"5"} />
-        <AuctionContainer collectionAddress={collection} tokenId={"6"} />
-        <AuctionContainer collectionAddress={collection} tokenId={"7"} />
         <div className="text-[12px] pb-8 text-black flex flex-row justify-center" >
             presented by&nbsp;
           <a className="hover:text-blue-500"href="https://feltzine.art">
