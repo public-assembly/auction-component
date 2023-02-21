@@ -13,14 +13,20 @@ export function AuctionMedia({metadata}: any) {
 
     return (
         <div className="h-fit flex flex-row w-full justify-center">
-            <div className="flex flex-row justify-center items-center overflow-hidden relative rounded-[8px]  bg-white drop-shadow-sm w-[320px] h-[220px] sm:h-[320px]">            
-                <a className="border-2 border-red-500" href={`https://opensea.io/assets/ethereum/${metadata?.collectionAddress}/${metadata?.tokenId}`}>                
+            <div className="flex flex-row justify-center items-center overflow-hidden relative rounded-[8px] bg-white drop-shadow-sm w-[320px] h-[320px]">            
+            <>
+            {!metadata ? (
+                <div></div>
+            ) : (
+                <a href={`https://opensea.io/assets/ethereum/${metadata?.collectionAddress}/${metadata?.tokenId}`}>                
                     <Image 
                         src={imageURL}
                         layout="fill"
                         objectFit='contain'
                     />
                 </a>
+            )}
+            </>
             </div>
         </div>
     )
