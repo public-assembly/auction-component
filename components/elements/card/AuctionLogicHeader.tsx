@@ -1,25 +1,23 @@
 // @ts-nocheck
 import {useState} from "react"
-import {usePrepareContractWrite, useContractWrite, useWaitForTransaction, useEnsName, useProvider} from 'wagmi'
-import { useAuth } from "hooks/useAuth";
+import {usePrepareContractWrite, useContractWrite, useWaitForTransaction} from 'wagmi'
 import goerliZoraAddresses from "@zoralabs/v3/dist/addresses/5.json";
 import mainnetZoraAddresses from "@zoralabs/v3/dist/addresses/1.json";
 import auctionABI from "@zoralabs/v3/dist/artifacts/ReserveAuctionListingEth.sol/ReserveAuctionListingEth.json"
-import {BigNumber, utils, Contract} from "ethers"
+import {BigNumber, utils} from "ethers"
 import { OpenseaRedirect } from './OpenseaRedirect';
 import { EnsResolution } from './EnsResolution';
 
-export function AuctionLogicHeader({time, auction, metadata}: any) {
+export function AuctionLogicHeader({time, auction, metadata, isConnected}: any) {
 
-    const { isConnected } = useAuth()
+    const bidder = auction ? auction.highestBidder : ""
 
-    console.log("is connected: ", isConnected)
+    const createdBy = metadata ? metadata.mintInfo.originatorAddress : ""
 
     // BID VALUE CALCS + CHECKS
     const [bidValue, setBidValue] = useState<number>('');
     const bidInputPlain: string = bidValue ? utils.parseEther(bidValue.toString()) : ""
     const bidInputConverted: string = bidInputPlain != "" ? BigNumber.from(bidInputPlain).toString() : ""
-
 
     // if highest bid isnt greater or equal to reserve price
         // then bed must be equal to at least reserve price
@@ -149,8 +147,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
         ? svgLoader()
         : settleIsSuccess
         ? "Settled"
-        : "Settle auction"
-
+        : "Settle auction" 
 
     if (!time || !auction || !metadata) {
         return (
@@ -172,7 +169,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                 <div className="flex flex-row w-full text-[16px]">
                     by&nbsp;
                     <div className="text-[#889292]">
-                    <EnsResolution metadata={metadata} />
+                    <EnsResolution address={createdBy} />
                     </div>
                 </div>                    
             </div>
@@ -186,7 +183,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                 <div className="flex flex-row w-full text-[16px]">
                     by&nbsp;
                     <div className="text-[#889292]">
-                        <EnsResolution metadata={metadata} />
+                        <EnsResolution address={createdBy} />
                     </div>
                 </div>                        
                 <div className="flex flex-row w-full text-[16px] pt-[16px] font-mono ">
@@ -206,9 +203,9 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                 <div className="flex flex-row w-full text-[16px]">
                     by&nbsp;
                     <div className="text-[#889292]">
-                        <EnsResolution metadata={metadata} />
+                        <EnsResolution address={createdBy} />
                     </div>
-                </div>                        
+                </div>            
                 <div className="mt-[12px] grid-rows-1 grid-cols-[2fr_1fr] flex flex-row items-center h-fit space-x-3 w-full text-[16px] ">
                     <input 
                         type="number"
@@ -230,7 +227,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                     >
                         {bidCTA}
                     </button>
-                </div>       
+                </div>                                 
                 <>
                     {!!bidError?.message ? (
                         <div className="pt-[12px] text-red-500 text-[14px]">
@@ -240,7 +237,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                     <div>                        
                     </div>
                     )}
-                </>                                                                
+                </>                                                              
             </div>            
         )
     } else if ((Number(auction.firstBidTime) + Number(auction.duration)) > time) {
@@ -255,9 +252,9 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                 <div className="flex flex-row w-full text-[16px]">
                     by&nbsp;
                     <div className="text-[#889292]">
-                    <EnsResolution metadata={metadata} />
+                    <EnsResolution address={createdBy} />
                     </div>
-                </div>                        
+                </div>                    
                 <div className="mt-[12px] grid-rows-1 grid-cols-[2fr_1fr] flex flex-row items-center h-fit space-x-3 w-full text-[16px] ">
                     <input 
                         type="number"
@@ -294,7 +291,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                     Current Bid&nbsp;<div className="text-[#889292]">Ξ&nbsp;{auction.highestBid}</div>
                 </div>     
                 <div className="flex flex-row pt-[4px] w-full text-[16px]">
-                    Bidder&nbsp;<div className="text-[#889292]"><EnsResolution metadata={metadata} /></div>
+                    Bidder&nbsp;<div className="text-[#889292]"><EnsResolution address={bidder} /></div>
                 </div>                                                                       
             </div>        
         )   
@@ -310,7 +307,7 @@ export function AuctionLogicHeader({time, auction, metadata}: any) {
                 <div className="flex flex-row w-full text-[16px]">
                     by&nbsp;
                     <div className="text-[#889292]">
-                    <EnsResolution metadata={metadata} />
+                    <EnsResolution address={createdBy} />
                     </div>
                 </div>                        
                 <div className="flex flex-row w-full text-[16px] pt-[16px] font-mono ">
