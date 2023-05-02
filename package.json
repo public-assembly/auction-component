@@ -11,10 +11,7 @@
     "pretty": "prettier --write ."
   },
   "dependencies": {
-    "@basementdev/ethers-provider": "^0.0.4",
     "@rainbow-me/rainbowkit": "^0.8.1",
-    "@zoralabs/nft-components": "^1.2.1",
-    "@zoralabs/nft-hooks": "^1.2.1",
     "@zoralabs/v3": "^1.0.13",
     "@zoralabs/zdk": "^2.2.0",
     "ethers": "^5.7.2",
